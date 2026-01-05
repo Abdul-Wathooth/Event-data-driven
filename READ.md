@@ -53,4 +53,5 @@ The high-level architecture includes:
 ## Project Structure
 event-driven-project/
 ├── lambda/ # Data processing and reporting scripts
+
 ├── infrastructure/ # IaC scripts (Terraform/CloudFormation)

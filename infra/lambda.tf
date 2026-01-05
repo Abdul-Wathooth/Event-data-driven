@@ -3,14 +3,17 @@
 # ---------------------------
 resource "aws_s3_bucket" "raw" {
   bucket = "event-raw-data-bucket-123"
+  force_destroy = true
 }
 
 resource "aws_s3_bucket" "processed" {
   bucket = "event-processed-data-bucket-123"
+  force_destroy = true
 }
 
 resource "aws_s3_bucket" "reports" {
   bucket = "event-daily-reports-bucket-123"
+  force_destroy = true
 }
 
 # ---------------------------
@@ -90,7 +93,7 @@ resource "aws_s3_bucket_notification" "raw_trigger" {
 # ---------------------------
 resource "aws_cloudwatch_event_rule" "daily" {
   name                = "daily-report-rule"
-  schedule_expression = "rate(1 day)"
+  schedule_expression = "rate(2 minutes)"
 }
 
 resource "aws_cloudwatch_event_target" "daily_lambda" {
@@ -108,3 +111,16 @@ resource "aws_lambda_permission" "allow_eventbridge" {
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.daily.arn
 }
+resource "aws_s3_object" "auto_input" {
+  bucket = aws_s3_bucket.raw.id
+  key    = "auto_input.json"
+  content = jsonencode({
+    event_type = "terraform_seed"
+    value      = 1
+  })
+
+  depends_on = [
+    aws_s3_bucket_notification.raw_trigger
+  ]
+}
+

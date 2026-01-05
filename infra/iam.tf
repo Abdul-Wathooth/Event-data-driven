@@ -13,6 +13,9 @@ resource "aws_iam_role" "lambda_role" {
   })
 }
 
+# ---------------------------
+# Lambda Permissions Policy
+# ---------------------------
 resource "aws_iam_role_policy" "lambda_policy" {
   role = aws_iam_role.lambda_role.id
 
@@ -21,12 +24,20 @@ resource "aws_iam_role_policy" "lambda_policy" {
     Statement = [
       {
         Effect = "Allow"
-        Action = ["s3:*"]
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:ListBucket"
+        ]
         Resource = "*"
       },
       {
         Effect = "Allow"
-        Action = ["logs:*"]
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
         Resource = "*"
       }
     ]
